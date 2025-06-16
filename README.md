@@ -2,8 +2,6 @@
 
 This is the Unofficial RazorPay Checkout extension for [Spree Commerce](https://spreecommerce.org).
 
-Thank you for supporting Spree open-source :heart:
-
 ## Installation
 
 1. Add this extension to your Gemfile with this line:
