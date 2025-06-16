@@ -9,13 +9,18 @@ This is the Unofficial RazorPay Checkout extension for [Spree Commerce](https://
     ```ruby
     gem 'spree_razorpay_checkout', git: 'https://github.com/umeshravani/spree_razorpay_checkout'
     ```
-2. Run the install generator
+2. Install Bundle using this command:
+
+    ```ruby
+    bundle install
+    ```    
+3. Run the install generator
 
     ```ruby
     bundle exec rails g spree_razorpay_checkout:install
     ```
 
-3. Restart your server
+4. Restart your server
 
   If your server was running, restart it so that it can find the assets properly.
 
