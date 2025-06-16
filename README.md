@@ -19,8 +19,11 @@ This is the Unofficial RazorPay Checkout extension for [Spree Commerce](https://
     ```ruby
     bundle exec rails g spree_razorpay_checkout:install
     ```
-
-4. Restart your server
+4. Run Migrations when asked "Would you like to run the migrations now? [Y/n]"
+    ```ruby
+    Y
+    ```
+5. Restart your server
 
   If your server was running, restart it so that it can find the assets properly.
 
