@@ -7,7 +7,7 @@ This is the Unofficial RazorPay Checkout extension for [Spree Commerce](https://
 1. Add this extension to your Gemfile with this line:
 
     ```ruby
-    gem 'spree_razorpay_checkout', git: 'https://github.com/UmeshRavani98/spree_razorpay_checkout'
+    gem 'spree_razorpay_checkout', git: 'https://github.com/umeshravani/spree_razorpay_checkout'
     ```
 2. Run the install generator
 
