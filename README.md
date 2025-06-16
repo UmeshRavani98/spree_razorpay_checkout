@@ -9,7 +9,7 @@ Thank you for supporting Spree open-source :heart:
 1. Add this extension to your Gemfile with this line:
 
     ```ruby
-    gem 'spree_razorpay_checkout', path: '../spree_razorpay_checkout'
+    gem 'spree_razorpay_checkout', git: 'https://github.com/UmeshRavani98/spree_razorpay_checkout'
     ```
 2. Run the install generator
 
