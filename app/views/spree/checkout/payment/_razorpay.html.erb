@@ -13,54 +13,75 @@
 
 <%# Ensure API Key ID is present before rendering Razorpay %>
 <% if razorpay_key_id.blank? %>
-  <div class="alert alert-danger" role="alert">
-    <%= Spree.t(:razorpay_misconfigured) %>
+    <div class="alert alert-danger" role="alert">
+      <%= Spree.t(:razorpay_misconfigured) %>
     </div>
   <% else %>
     <form id="razorpay-payment-form-<%= payment_method_id %>" class="razorpay-payment-form" data-payment-method-id="<%= payment_method_id %>">
       <%# Button to trigger Razorpay checkout %>
       <button id="razorpay-payment-button-<%= payment_method_id %>" class="btn btn-primary razorpay-payment-button">
         <%= Spree.t(:pay_with_razorpay) %> <i class="fas fa-credit-card"></i>
-    </button>
-
-    <%# Display any Razorpay-related errors %>
+      </button>
+  
+      <%# Display any Razorpay-related errors %>
     <div id="razorpay-error-<%= payment_method_id %>" class="razorpay-error-messages mt-2 text-danger" style="display: none;">
       <%= Spree.t(:razorpay_payment_failed) %>
-    </div>
-  
+      </div>
+    
       <%# Hidden fields for Razorpay callback if needed %>
       <input type="hidden" name="payment_source[razorpay_payment_id]" id="razorpay_payment_id_<%= payment_method_id %>">
       <input type="hidden" name="payment_source[razorpay_order_id]" id="razorpay_order_id_<%= payment_method_id %>">
       <input type="hidden" name="payment_source[razorpay_signature]" id="razorpay_signature_<%= payment_method_id %>">
     </form>
-  
+    
     <%# Ensure Razorpay's JavaScript library is included %>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-  <script>
-    document.addEventListener('turbo:load', function() {
-      var paymentButton = document.getElementById("razorpay-payment-button-<%= payment_method_id %>");
-      if (paymentButton) {
-        paymentButton.addEventListener("click", function() {
-          var options = {
-            key: "<%= razorpay_key_id %>",
-            amount: "<%= (@order.total * 100).to_i %>",
-            currency: "INR",
-            name: "Your Store",
-            description: "Order Payment",
-            order_id: "<%= Spree::Core::Engine.routes.url_helpers.api_v2_storefront_razorpay_create_order_path %>",
-            handler: function(response) {
-              document.getElementById("razorpay_payment_id_<%= payment_method_id %>").value = response.razorpay_payment_id;
-              document.getElementById("razorpay_order_id_<%= payment_method_id %>").value = response.razorpay_order_id;
-              document.getElementById("razorpay_signature_<%= payment_method_id %>").value = response.razorpay_signature;
-              document.getElementById("razorpay-payment-form-<%= payment_method_id %>").submit();
-            }
-          };
-
-          var razorpayInstance = new Razorpay(options);
-          razorpayInstance.open();
+  
+    <script>
+      document.addEventListener('turbo:load', function() {
+        var paymentButton = document.getElementById("razorpay-payment-button-<%= payment_method_id %>");
+        if (paymentButton) {
+          paymentButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            fetch('<%= Spree::Core::Engine.routes.url_helpers.api_v2_storefront_razorpay_create_order_path %>', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+              },
+              body: JSON.stringify({
+                amount: "<%= (@order.total * 100).to_i %>",
+                currency: "INR"
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              var options = {
+                key: "<%= razorpay_key_id %>",
+                amount: <%= (@order.total * 100).to_i %>,
+                currency: data.currency,
+                name: "Your Store",
+                description: "Order Payment",
+                order_id: data.id,
+                handler: function(response) {
+                  document.getElementById("razorpay_payment_id_<%= payment_method_id %>").value = response.razorpay_payment_id;
+                  document.getElementById("razorpay_order_id_<%= payment_method_id %>").value = response.razorpay_order_id;
+                  document.getElementById("razorpay_signature_<%= payment_method_id %>").value = response.razorpay_signature;
+                  console.log("Debug: Razorpay Response -", response);
+                    console.log("Debug: Hidden Fields Set - Payment ID: " + document.getElementById("razorpay_payment_id_<%= payment_method_id %>").value + ", Order ID: " + document.getElementById("razorpay_order_id_<%= payment_method_id %>").value + ", Signature: " + document.getElementById("razorpay_signature_<%= payment_method_id %>").value);
+                    document.getElementById("razorpay-payment-form-<%= payment_method_id %>").submit();
+                    window.location.href = '/thank_you'; // Redirect to thank you page after payment
+                  }
+                };
+            var razorpayInstance = new Razorpay(options);
+              razorpayInstance.open();
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              document.getElementById("razorpay-error-<%= payment_method_id %>").style.display = 'block';
+            });
+          });
+          }
         });
-      }
-    });
-  </script>
+      </script>
 <% end %>
