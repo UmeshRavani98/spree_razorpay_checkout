@@ -17,12 +17,12 @@ module Spree
           receipt: order_number,
           payment_capture: 1
         )
-
-        render json: {
-          razorpay_order_id: razorpay_order.id,
-          amount: amount
-        }
-      rescue => e
+  
+          render json: {
+            razorpay_order_id: razorpay_order['id'],
+            amount: amount
+          }
+        rescue => e
         render json: { error: e.message }, status: 500
       end
     end
