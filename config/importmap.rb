@@ -1,2 +1,0 @@
-  pin "spree_razorpay_checkout/controllers/checkout_razorpay_controller", to: "spree_razorpay_checkout/controllers/checkout_razorpay_controller.js"
-  pin "razorpay_checkout", to: "razorpay_checkout.js"
